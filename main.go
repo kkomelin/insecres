@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"crypto/tls"
 )
 
 type Fetcher interface {
@@ -64,7 +66,30 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 }
 
 func main() {
-	Crawl("http://golang.org/", 4, fetcher)
+	var page Page
+
+	uri := "https://komelin.com"
+
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := http.Client{Transport: transport}
+	resp, err := client.Get(uri)
+	if err != nil {
+		fmt.Errorf("Request error %v", err)
+		return
+	}
+	links, err := page.Parse(resp.Body)
+	if err != nil {
+		fmt.Errorf("Parse error %v", err)
+		return
+	}
+
+	fmt.Println(links)
+
+	//Crawl("http://golang.org/", 4, fetcher)
 }
 
 // UrlFetcher is Fetcher that returns canned results.
