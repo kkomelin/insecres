@@ -48,8 +48,13 @@ func (p *Page) Parse(httpBody io.Reader) (resourceUrls []string, err error) {
 				break
 			}
 
-			// Check absolue urls only.
+			// Check absolute urls only.
 			if !uri.IsAbs() {
+				break
+			}
+
+			// Ignore secure links.
+			if uri.Scheme == "https" {
 				break
 			}
 
