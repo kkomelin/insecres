@@ -56,14 +56,13 @@ func Crawl(url string, fetcher Fetcher) {
 				go fetch(url, ch, quit, registry)
 			}
 		case <-tick:
-			if i > 1 {
+			if i >= 1 {
 				fmt.Println("-----")
 				fmt.Printf("log:\n")
 				fmt.Println(registry)
 				return
 			} else {
 				i++
-				fmt.Println(i)
 			}
 		}
 	}
