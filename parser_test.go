@@ -30,7 +30,7 @@ func TestParser(t *testing.T) {
 		"https://example.com/test3",
 	}
 
-	fetcher := UrlFetcher{}
+	fetcher := InsecureResourceFetcher{}
 
 	resources, links, err := fetcher.Parse("https://example.com/", reader)
 	if err != nil {

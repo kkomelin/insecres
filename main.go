@@ -2,57 +2,69 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
-func fetch(url string, ch chan []string, quit chan int, depth int, registry *Registry) {
-	if depth <= 0 {
-		quit <- 0
-		return
-	}
+func fetch(url string, ch chan []string, quit chan int, registry *Registry) {
+	//if depth <= 0 {
+	//	quit <- 0
+	//	return
+	//}
 
 	// Try to add the url to the registry if it has not yet been added.
 	if !registry.IsNew(url) {
-		fmt.Printf("depth: %d: skip %s: duplicate\n", depth, url)
+		//fmt.Printf("skip %s: duplicate\n", url)
 		return
 	}
 
-	fetcher := UrlFetcher{}
+	fetcher := InsecureResourceFetcher{}
 
-	_, pageUrls, err := fetcher.Fetch(url)
+	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
 		fmt.Errorf("Error occured: %v", err)
 		return
 	}
-	fmt.Printf("depth: %d: found: %s %q\n", depth, url, pageUrls)
+
+	for _, insecureResourceUrl := range insecureResourceUrls {
+		fmt.Printf("%s: %s\n", url, insecureResourceUrl)
+	}
 
 	registry.MarkAsProcessed(url)
 
 	ch <- pageUrls
 }
 
-// Crawl uses fetcher to recursively crawl
-// pages starting with url, to a maximum of depth.
-func Crawl(url string, depth int, fetcher Fetcher) {
+// Uses fetcher to recursively crawl
+// pages starting with url.
+func Crawl(url string, fetcher Fetcher) {
 
 	registry := &Registry{processed: make(map[string]int)}
 
 	ch := make(chan []string)
 	quit := make(chan int)
 
-	go fetch(url, ch, quit, depth, registry)
+	go fetch(url, ch, quit, registry)
 
+	tick := time.Tick(1000 * time.Millisecond)
+
+	i := 0
 	for {
 		select {
 		case urls := <-ch:
-			depth--
+			i = 0
 			for _, url := range urls {
-				go fetch(url, ch, quit, depth, registry)
+				go fetch(url, ch, quit, registry)
 			}
-		case <-quit:
-			fmt.Printf("depth: %d: quit\n", depth)
-			fmt.Println("-----")
-			fmt.Println(registry)
-			return
+		case <-tick:
+			if i > 1 {
+				fmt.Println("-----")
+				fmt.Printf("log:\n")
+				fmt.Println(registry)
+				return
+			} else {
+				i++
+				fmt.Println(i)
+			}
 		}
 	}
 
@@ -60,9 +72,9 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 }
 
 func main() {
-	uri := "https://komelin.com"
+	uri := "http://drupal7"
 
-	fetcher := UrlFetcher{}
+	fetcher := InsecureResourceFetcher{}
 
-	Crawl(uri, 4, fetcher)
+	Crawl(uri, fetcher)
 }

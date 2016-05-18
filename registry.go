@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"strconv"
 )
 
 // Thread-safe processed urls registry.
@@ -39,8 +38,8 @@ func (r *Registry) String() string {
 	defer r.mux.Unlock()
 
 	output := ""
-	for url, counter := range r.processed {
-		output += strconv.Itoa(counter) + ": " + url + "\n"
+	for url, _ := range r.processed {
+		output += url + "\n"
 	}
 	return output
 }

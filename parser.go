@@ -16,7 +16,7 @@ type Parser interface {
 // Takes a reader object and returns a slice of insecure resource urls
 // found in the HTML.
 // It does not close the reader. The reader should be closed from the outside.
-func (f UrlFetcher) Parse(baseUrl string, httpBody io.Reader) (resourceUrls []string, linkUrls []string, err error) {
+func (f InsecureResourceFetcher) Parse(baseUrl string, httpBody io.Reader) (resourceUrls []string, linkUrls []string, err error) {
 
 	resourceMap := make(map[string]bool)
 	linkMap := make(map[string]bool)
@@ -59,7 +59,7 @@ func (f UrlFetcher) Parse(baseUrl string, httpBody io.Reader) (resourceUrls []st
 	return resourceUrls, linkUrls, nil
 }
 
-func (f UrlFetcher) processImageToken(token html.Token) (string, error) {
+func (f InsecureResourceFetcher) processImageToken(token html.Token) (string, error) {
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
 		if attr.Key != "src" {
@@ -82,7 +82,7 @@ func (f UrlFetcher) processImageToken(token html.Token) (string, error) {
 	return "", errors.New("Src has not been found. Skipped.");
 }
 
-func (f UrlFetcher) processLinkToken(token html.Token, base string) (string, error) {
+func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string) (string, error) {
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
 		if attr.Key != "href" {
@@ -125,6 +125,6 @@ func (f UrlFetcher) processLinkToken(token html.Token, base string) (string, err
 	return "", errors.New("Src has not been found. Skipped.");
 }
 
-func (f UrlFetcher) convertToAbsolute(href, base *url.URL) (*url.URL) {
+func (f InsecureResourceFetcher) convertToAbsolute(href, base *url.URL) (*url.URL) {
 	return base.ResolveReference(href)
 }
