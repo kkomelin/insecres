@@ -18,7 +18,7 @@ func fetch(url string, ch chan []string, quit chan int, depth int, registry *Reg
 
 	fetcher := UrlFetcher{}
 
-	resourceUrls, pageUrls, err := fetcher.Fetch(url)
+	_, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
 		fmt.Errorf("Error occured: %v", err)
 		return
@@ -27,7 +27,7 @@ func fetch(url string, ch chan []string, quit chan int, depth int, registry *Reg
 
 	registry.MarkAsProcessed(url)
 
-	ch <- resourceUrls
+	ch <- pageUrls
 }
 
 // Crawl uses fetcher to recursively crawl
@@ -44,7 +44,7 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	for {
 		select {
 		case urls := <-ch:
-			depth --;
+			depth--
 			for _, url := range urls {
 				go fetch(url, ch, quit, depth, registry)
 			}
@@ -64,15 +64,5 @@ func main() {
 
 	fetcher := UrlFetcher{}
 
-	resourceUrls, linkUrls, err := fetcher.Fetch(uri)
-	if err != nil {
-		fmt.Errorf("Error occured: %v", err)
-		return
-	}
-
-	fmt.Println(resourceUrls)
-
-	fmt.Println(linkUrls)
-
-	//Crawl("http://golang.org/", 4, fetcher)
+	Crawl(uri, 4, fetcher)
 }
