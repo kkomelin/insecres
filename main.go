@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-func process(url string, queue chan []string, registry *Registry) {
+// Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
+func fetchUrl(url string, queue chan []string, registry *Registry) {
 
 	// Lock url so that no one other goroutine can process it.
 	registry.MarkAsProcessed(url)
@@ -26,15 +27,14 @@ func process(url string, queue chan []string, registry *Registry) {
 	queue <- pageUrls
 }
 
-// Uses fetcher to recursively crawl
-// pages starting with url.
-func Crawl(url string, fetcher Fetcher) {
+// Crawl pages starting with url and find insecure resources.
+func crawl(url string, fetcher Fetcher) {
 
 	registry := &Registry{processed: make(map[string]int)}
 
 	queue := make(chan []string)
 
-	go process(url, queue, registry)
+	go fetchUrl(url, queue, registry)
 
 	tick := time.Tick(1000 * time.Millisecond)
 
@@ -49,7 +49,7 @@ func Crawl(url string, fetcher Fetcher) {
 				if !registry.IsNew(url) {
 					continue
 				}
-				go process(url, queue, registry)
+				go fetchUrl(url, queue, registry)
 			}
 		case <-tick:
 			if flag {
@@ -67,9 +67,10 @@ func Crawl(url string, fetcher Fetcher) {
 }
 
 func main() {
+	// TODO: Pass site url as an argument.
 	uri := "http://drupal7"
 
 	fetcher := InsecureResourceFetcher{}
 
-	Crawl(uri, fetcher)
+	crawl(uri, fetcher)
 }

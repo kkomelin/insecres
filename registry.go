@@ -31,7 +31,8 @@ func (r *Registry) IsNew(url string) bool {
 }
 
 // Define our own way to output the processed urls.
-// [number of times found]: [url]
+// [url1]\n
+// [url2]\n
 func (r *Registry) String() string {
 	r.mux.Lock()
 	defer r.mux.Unlock()
