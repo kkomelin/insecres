@@ -30,7 +30,6 @@ func (f InsecureResourceFetcher) Parse(baseUrl string, httpBody io.Reader) (reso
 		token := page.Token()
 
 		switch {
-		// Find all insecure urls.
 		case tokenType == html.SelfClosingTagToken && token.DataAtom.String() == "img":
 			uri, err := f.processImageToken(token)
 			if err == nil {
