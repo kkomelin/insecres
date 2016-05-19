@@ -18,6 +18,8 @@ func TestParser(t *testing.T) {
 <a href="/article/test1">Relative link</a>
 <a href="http://example.com/test2">Absolute HTTP link</a>
 <a href="https://example.com/test3">Absolute HTTPS link</a>
+<a href="https://www.youtube.com/watch?v=yIhJEO6QvFA">External link</a>
+<a href="//www.youtube.com/watch?v=o4cM2KUdfTg">Reproduces bug in Go url.isAbs()</a>
 </body>`)
 
 	expected_resources := []string{

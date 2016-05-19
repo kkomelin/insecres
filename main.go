@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"time"
+	"flag"
+	"os"
+	"errors"
 )
 
 // Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
-func fetchUrl(url string, queue chan []string, registry *Registry) {
+func fetchUrl(url string, queue chan string, registry *Registry) {
 
 	// Lock url so that no one other goroutine can process it.
 	registry.MarkAsProcessed(url)
@@ -23,8 +26,10 @@ func fetchUrl(url string, queue chan []string, registry *Registry) {
 		fmt.Printf("%s: %s\n", url, insecureResourceUrl)
 	}
 
-	// TODO: calculate speed of processing by batches (as it is now) or by single url and adjust if necessary.
-	queue <- pageUrls
+	for _, url := range pageUrls {
+		queue <- url
+	}
+
 }
 
 // Crawl pages starting with url and find insecure resources.
@@ -32,7 +37,7 @@ func crawl(url string, fetcher Fetcher) {
 
 	registry := &Registry{processed: make(map[string]int)}
 
-	queue := make(chan []string)
+	queue := make(chan string)
 
 	go fetchUrl(url, queue, registry)
 
@@ -41,16 +46,14 @@ func crawl(url string, fetcher Fetcher) {
 	flag := false
 	for {
 		select {
-		case urls := <-queue:
+		case url := <-queue:
 			flag = false
-			for _, url := range urls {
 
-				// Ignore processed urls.
-				if !registry.IsNew(url) {
-					continue
-				}
-				go fetchUrl(url, queue, registry)
+			// Ignore processed urls.
+			if !registry.IsNew(url) {
+				continue
 			}
+			go fetchUrl(url, queue, registry)
 		case <-tick:
 			if flag {
 				fmt.Println("-----")
@@ -63,14 +66,27 @@ func crawl(url string, fetcher Fetcher) {
 		}
 	}
 
-	return
+}
+
+func startUrl() (string, error) {
+	flag.Parse()
+
+	args := flag.Args()
+
+	if len(args) < 1 {
+		return "", errors.New("Please specify the HTTPS address of the site, e.g. https://example.com")
+	}
+
+	return args[0], nil
 }
 
 func main() {
-	// TODO: Pass site url as an argument.
-	uri := "http://drupal7"
 
-	fetcher := InsecureResourceFetcher{}
+	startUrl, err := startUrl();
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	crawl(uri, fetcher)
+	crawl(startUrl, InsecureResourceFetcher{})
 }

@@ -104,11 +104,13 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 			return "", err
 		}
 
+		// FIXME: Golang has bug in url.isAbs(). It doesn't take into account urls like //example.com
+
 		// Return result if the uri is absolute.
-		if uri.IsAbs() {
+		if uri.IsAbs() || (uri.Host != "" && strings.HasPrefix(uri.String(), "//")) {
 
 			// Ignore external urls.
-			// TODO: consider urls with WWW and with WWW as the same.
+			// TODO: consider urls with WWW and without WWW as the same.
 			if uri.Host != baseUrl.Host {
 				return "", errors.New("Url is expernal. Skipped.")
 			}
