@@ -20,3 +20,4 @@ go get github.com/kkomelin/httpsrescheck
 - Improve output format (CSV?)
 - Handle trailing slash (https://example.com and https://example.com/)
 - Handle domains w/ and w/o WWW
+- Add some Sleep between requests to prevent blacklisting
