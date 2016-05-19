@@ -4,10 +4,9 @@ import (
 	"sync"
 )
 
-// Thread-safe processed urls registry.
+// Thread-safe registry for processed urls.
 type Registry struct {
 	processed map[string]int
-	queue []string
 	mux  sync.Mutex
 }
 
@@ -42,28 +41,4 @@ func (r *Registry) String() string {
 		output += url + "\n"
 	}
 	return output
-}
-
-func (r *Registry) AddToQueue(url string) {
-	r.mux.Lock()
-	defer r.mux.Unlock()
-
-	// TODO: Check for existence. It is not enough to check just r.processed and we have to also check queue.
-
-	r.queue = append(r.queue, url)
-}
-
-func (r *Registry) GetFromQueue() (string, bool) {
-	r.mux.Lock()
-	defer r.mux.Unlock()
-
-	if len(r.queue) == 0 {
-		return "", false
-	}
-
-	url := r.queue[0]
-	// Remove the top element from the slice.
-	r.queue = r.queue[1:]
-
-	return url, true
 }

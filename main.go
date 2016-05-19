@@ -5,17 +5,10 @@ import (
 	"time"
 )
 
-func fetch(url string, ch chan []string, quit chan int, registry *Registry) {
-	//if depth <= 0 {
-	//	quit <- 0
-	//	return
-	//}
+func process(url string, queue chan []string, registry *Registry) {
 
-	// Try to add the url to the registry if it has not yet been added.
-	if !registry.IsNew(url) {
-		//fmt.Printf("skip %s: duplicate\n", url)
-		return
-	}
+	// Lock url so that no one other goroutine can process it.
+	registry.MarkAsProcessed(url)
 
 	fetcher := InsecureResourceFetcher{}
 
@@ -29,9 +22,8 @@ func fetch(url string, ch chan []string, quit chan int, registry *Registry) {
 		fmt.Printf("%s: %s\n", url, insecureResourceUrl)
 	}
 
-	registry.MarkAsProcessed(url)
-
-	ch <- pageUrls
+	// TODO: calculate speed of processing by batches (as it is now) or by single url and adjust if necessary.
+	queue <- pageUrls
 }
 
 // Uses fetcher to recursively crawl
@@ -40,29 +32,33 @@ func Crawl(url string, fetcher Fetcher) {
 
 	registry := &Registry{processed: make(map[string]int)}
 
-	ch := make(chan []string)
-	quit := make(chan int)
+	queue := make(chan []string)
 
-	go fetch(url, ch, quit, registry)
+	go process(url, queue, registry)
 
 	tick := time.Tick(1000 * time.Millisecond)
 
-	i := 0
+	flag := false
 	for {
 		select {
-		case urls := <-ch:
-			i = 0
+		case urls := <-queue:
+			flag = false
 			for _, url := range urls {
-				go fetch(url, ch, quit, registry)
+
+				// Ignore processed urls.
+				if !registry.IsNew(url) {
+					continue
+				}
+				go process(url, queue, registry)
 			}
 		case <-tick:
-			if i >= 1 {
+			if flag {
 				fmt.Println("-----")
 				fmt.Printf("log:\n")
 				fmt.Println(registry)
 				return
 			} else {
-				i++
+				flag = true
 			}
 		}
 	}
