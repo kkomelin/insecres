@@ -71,6 +71,7 @@ func crawl(url string, fetcher Fetcher) {
 
 }
 
+// Get start url from the command line arguments.
 func startUrl() (string, error) {
 	flag.Parse()
 

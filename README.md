@@ -1,4 +1,4 @@
-# httpsrescheck
+# insecuRes - Insecure Resource Finder
 A console tool that finds insecure resources on HTTPS sites.
 It is written in Go language and uses the power of "multi-threading" (goroutines) to crawl and parse site pages.
 
@@ -17,18 +17,18 @@ After some research of existing tools, which did not fit my needs, I decided to 
 ## Installation
 
 ```
-go get github.com/kkomelin/httpsrescheck
+go get github.com/kkomelin/insecures
 ```
 
 ## Usage
 
 ```
-./httpsrescheck https://example.com
+./insecures https://example.com
 ```
 
 ## Roadmap
 
-- Check audio and video tags
+- Check AUDIO and VIDEO tags
 - Implement debug option and hide url log by default
 - Improve output format (CSV?)
 - Add some Sleep between requests to prevent blacklisting
