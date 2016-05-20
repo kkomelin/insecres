@@ -19,7 +19,7 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 
 	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
-		fmt.Errorf("Error occured: %v", err)
+		fmt.Errorf("Error occured: %v\n", err)
 		return
 	}
 
@@ -60,7 +60,8 @@ func crawl(url string, fetcher Fetcher) {
 		case <-tick:
 			if flag {
 				fmt.Println("-----")
-				fmt.Printf("log:\n")
+				fmt.Printf("Analized pages:\n")
+				fmt.Println("-----")
 				fmt.Println(registry)
 				return
 			} else {
@@ -88,9 +89,13 @@ func main() {
 
 	startUrl, err := startUrl()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Errorf("Error occured: %v\n", err)
 		os.Exit(1)
 	}
+
+	fmt.Println("-----")
+	fmt.Printf("Insecure resources (page: resource):\n")
+	fmt.Println("-----")
 
 	crawl(startUrl, InsecureResourceFetcher{})
 }
