@@ -6,6 +6,7 @@ import (
 	"flag"
 	"os"
 	"errors"
+	"strings"
 )
 
 // Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
@@ -34,6 +35,8 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 
 // Crawl pages starting with url and find insecure resources.
 func crawl(url string, fetcher Fetcher) {
+
+	url = strings.TrimSuffix(url, "/")
 
 	registry := &Registry{processed: make(map[string]int)}
 

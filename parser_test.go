@@ -22,21 +22,24 @@ func TestParser(t *testing.T) {
 <a href="http://www.example.com/test3">Absolute HTTPS link</a>
 <a href="https://www.youtube.com/watch?v=yIhJEO6QvFA">External link</a>
 <a href="//www.youtube.com/watch?v=o4cM2KUdfTg">Reproduces bug in Go url.isAbs()</a>
+<a href="http://www.example.com/test4/">Ignoring trailing slash</a>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 <iframe width="560" height="315" src="http://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 <iframe width="560" height="315" src="//www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 </body>`)
 
-	expected_resources := []string{
-		0: "http://example.com/images/test.png",
-		1: "http://www.youtube.com/embed/0sRPY3WWSNc",
+	expected_resources := map[string]int{
+		"http://example.com/images/test.png": 0,
+		"http://www.youtube.com/embed/0sRPY3WWSNc": 1,
 	}
 
-	expected_links := []string{
-		0: "https://example.com/article/test1",
-		1: "http://example.com/test2",
-		2: "https://example.com/test3",
-		3: "http://www.example.com/test3",
+
+	expected_links := map[string]int{
+		"https://example.com/article/test1": 0,
+		"http://example.com/test2": 1,
+		"https://example.com/test3": 2,
+		"http://www.example.com/test3": 3,
+		"http://www.example.com/test4": 4,
 	}
 
 	fetcher := InsecureResourceFetcher{}
@@ -52,9 +55,9 @@ func TestParser(t *testing.T) {
 	if len(resources) != len(expected_resources) {
 		t.Errorf("Wrong number of resources. Found %d of %d", len(resources), len(expected_resources))
 	} else {
-		for i := 0; i < len(expected_resources); i++ {
-			if resources[i] != expected_resources[i] {
-				t.Errorf("Resource url %d is incorrect. Expected: %s, Given: %s", i, expected_resources[i], resources[i])
+		for i := 0; i < len(resources); i++ {
+			if _, ok := expected_resources[resources[i]]; !ok {
+				t.Errorf("Resource url is not found in the expected values: %s", resources[i])
 			}
 		}
 	}
@@ -66,9 +69,9 @@ func TestParser(t *testing.T) {
 		t.Errorf("Wrong number of links. Found %d of %d", len(links), len(expected_links))
 
 	} else {
-		for i := 0; i < len(expected_links); i++ {
-			if links[i] != expected_links[i] {
-				t.Errorf("Link url %d is incorrect. Expected: %s, Given: %s", i, expected_links[i], links[i])
+		for i := 0; i < len(links); i++ {
+			if _, ok := expected_links[links[i]]; !ok {
+				t.Errorf("Link url is not found in the expected values: %s", links[i])
 			}
 		}
 	}

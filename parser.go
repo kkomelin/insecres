@@ -87,6 +87,7 @@ func (f InsecureResourceFetcher) processResourceToken(token html.Token) (string,
 }
 
 func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string) (string, error) {
+
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
 		if attr.Key != "href" {
@@ -116,13 +117,13 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 				return "", errors.New("Url is expernal. Skipped.")
 			}
 
-			return uri.String(), nil
+			return strings.TrimSuffix(uri.String(), "/"), nil
 		}
 
 		// Make it absolute if it's relative.
 		absoluteUrl := f.convertToAbsolute(uri, baseUrl)
 
-		return absoluteUrl.String(), nil
+		return strings.TrimSuffix(absoluteUrl.String(), "/"), nil
 	}
 
 	return "", errors.New("Src has not been found. Skipped.");
