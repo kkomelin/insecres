@@ -12,7 +12,7 @@ After some research of existing tools, which did not fit my needs, I decided to 
 ## Features
 
 - Crawl all site pages in parallel
-- Find IMG and IFRAME resources with absolute HTTP urls
+- Find IMG, IFRAME and OBJECT resources with absolute HTTP urls
 
 ## Installation
 
