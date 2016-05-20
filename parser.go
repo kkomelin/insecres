@@ -45,13 +45,13 @@ func (f InsecureResourceFetcher) Parse(baseUrl string, httpBody io.Reader) (reso
 
 	resourceUrls = make([]string, 0, len(resourceMap))
 
-	for k, _ := range resourceMap {
+	for k := range resourceMap {
 		resourceUrls = append(resourceUrls, k)
 	}
 
 	linkUrls = make([]string, 0, len(linkMap))
 
-	for k, _ := range linkMap {
+	for k := range linkMap {
 		linkUrls = append(linkUrls, k)
 	}
 

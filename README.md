@@ -1,4 +1,6 @@
 # insecuRes - Insecure Resource Finder
+[![Go Report Card](https://goreportcard.com/badge/github.com/kkomelin/insecures)](https://goreportcard.com/report/github.com/kkomelin/insecures)
+
 A console tool that finds insecure resources on HTTPS sites.
 It is written in Go language and uses the power of "multi-threading" (goroutines) to crawl and parse site pages.
 
@@ -32,7 +34,7 @@ go get github.com/kkomelin/insecures
 - Implement debug option and hide url log by default
 - Improve output format (CSV?)
 - Add some Sleep between requests to prevent blacklisting
-- ~~Ignore trailing slashes (https://example.com and https://example.com/ are the same)~~
+- ~~Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)~~
 - ~~Handle domains w/ and w/o WWW~~
 - ~~Check IFRAME tags~~
 - ~~Check OBJECT tags~~

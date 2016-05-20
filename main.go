@@ -64,12 +64,10 @@ func crawl(url string, fetcher Fetcher) {
 				fmt.Println("-----")
 				fmt.Println(registry)
 				return
-			} else {
-				flag = true
 			}
+			flag = true
 		}
 	}
-
 }
 
 // Get start url from the command line arguments.

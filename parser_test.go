@@ -36,13 +36,13 @@ func TestParser(t *testing.T) {
 </object>
 </body>`)
 
-	expected_resources := map[string]int{
+	expectedResources := map[string]int{
 		"http://example.com/images/test.png":        0,
 		"http://www.youtube.com/embed/0sRPY3WWSNc":  1,
 		"http://www.example.com/flash/insecure.swf": 2,
 	}
 
-	expected_links := map[string]int{
+	expectedLinks := map[string]int{
 		"https://example.com/article/test1": 0,
 		"http://example.com/test2":          1,
 		"https://example.com/test3":         2,
@@ -60,11 +60,11 @@ func TestParser(t *testing.T) {
 	// Check resources.
 	fmt.Printf("Resources: %q\n", resources)
 
-	if len(resources) != len(expected_resources) {
-		t.Errorf("Wrong number of resources. Found %d of %d", len(resources), len(expected_resources))
+	if len(resources) != len(expectedResources) {
+		t.Errorf("Wrong number of resources. Found %d of %d", len(resources), len(expectedResources))
 	} else {
 		for i := 0; i < len(resources); i++ {
-			if _, ok := expected_resources[resources[i]]; !ok {
+			if _, ok := expectedResources[resources[i]]; !ok {
 				t.Errorf("Resource url is not found in the expected values: %s", resources[i])
 			}
 		}
@@ -73,12 +73,12 @@ func TestParser(t *testing.T) {
 	// Check links.
 	fmt.Printf("Links: %q\n", links)
 
-	if len(links) != len(expected_links) {
-		t.Errorf("Wrong number of links. Found %d of %d", len(links), len(expected_links))
+	if len(links) != len(expectedLinks) {
+		t.Errorf("Wrong number of links. Found %d of %d", len(links), len(expectedLinks))
 
 	} else {
 		for i := 0; i < len(links); i++ {
-			if _, ok := expected_links[links[i]]; !ok {
+			if _, ok := expectedLinks[links[i]]; !ok {
 				t.Errorf("Link url is not found in the expected values: %s", links[i])
 			}
 		}

@@ -38,7 +38,7 @@ func (r *Registry) String() string {
 	defer r.mux.Unlock()
 
 	output := ""
-	for url, _ := range r.processed {
+	for url := range r.processed {
 		output += url + "\n"
 	}
 	return output
