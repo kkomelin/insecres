@@ -14,16 +14,21 @@ func TestParser(t *testing.T) {
 <img src="/images/test.png">
 <img src="http://example.com/images/test.png" />
 <img src="https://example.com/images/test.png" />
+<img src="//example.com/images/test.png" />
 <a href="#">Anchor (ignored)</a>
 <a href="/article/test1">Relative link</a>
 <a href="http://example.com/test2">Absolute HTTP link</a>
 <a href="https://example.com/test3">Absolute HTTPS link</a>
 <a href="https://www.youtube.com/watch?v=yIhJEO6QvFA">External link</a>
 <a href="//www.youtube.com/watch?v=o4cM2KUdfTg">Reproduces bug in Go url.isAbs()</a>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="http://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="//www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 </body>`)
 
 	expected_resources := []string{
 		"http://example.com/images/test.png",
+		"http://www.youtube.com/embed/0sRPY3WWSNc",
 	}
 
 	expected_links := []string{
@@ -42,7 +47,7 @@ func TestParser(t *testing.T) {
 	fmt.Printf("Resources: %q\n", resources)
 
 	if len(resources) != len(expected_resources) {
-		t.Errorf("Wrong number of links. Found %d of %d", len(resources), len(expected_resources))
+		t.Errorf("Wrong number of resources. Found %d of %d", len(resources), len(expected_resources))
 	} else {
 		for i := 0; i < len(expected_resources); i++ {
 			if resources[i] != expected_resources[i] {

@@ -31,7 +31,12 @@ func (f InsecureResourceFetcher) Parse(baseUrl string, httpBody io.Reader) (reso
 
 		switch {
 		case tokenType == html.SelfClosingTagToken && token.DataAtom.String() == "img":
-			uri, err := f.processImageToken(token)
+			uri, err := f.processResourceToken(token)
+			if err == nil {
+				resourceMap[uri] = true
+			}
+		case tokenType == html.StartTagToken && token.DataAtom.String() == "iframe":
+			uri, err := f.processResourceToken(token)
 			if err == nil {
 				resourceMap[uri] = true
 			}
@@ -58,7 +63,7 @@ func (f InsecureResourceFetcher) Parse(baseUrl string, httpBody io.Reader) (reso
 	return resourceUrls, linkUrls, nil
 }
 
-func (f InsecureResourceFetcher) processImageToken(token html.Token) (string, error) {
+func (f InsecureResourceFetcher) processResourceToken(token html.Token) (string, error) {
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
 		if attr.Key != "src" {
@@ -71,7 +76,7 @@ func (f InsecureResourceFetcher) processImageToken(token html.Token) (string, er
 		}
 
 		// Ignore relative and secure urls.
-		if !uri.IsAbs() || uri.Scheme == "https" {
+		if !uri.IsAbs() || uri.Scheme == "https" || (uri.Host != "" && strings.HasPrefix(uri.String(), "//")) {
 			return "", errors.New("Uri is relative or secure. Skipped.")
 		}
 

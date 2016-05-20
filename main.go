@@ -41,7 +41,7 @@ func crawl(url string, fetcher Fetcher) {
 
 	go fetchUrl(url, queue, registry)
 
-	tick := time.Tick(1000 * time.Millisecond)
+	tick := time.Tick(2000 * time.Millisecond)
 
 	flag := false
 	for {
