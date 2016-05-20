@@ -4,7 +4,7 @@ It is written in Go language and uses the power of "multi-threading" (goroutines
 
 ## The motivation
 
-Some time ago, I switched my site to HTTPS. And you should too!
+Some time ago, I switched my site to HTTPS. _And you should too!_
 All went well except the fact that my pages contained images, embedded videos and other resources,
 which pointed to HTTP content and made browsers display warnings about the insecure content on the pages.
 After some research of existing tools, which did not fit my needs, I decided to create my own one.
