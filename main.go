@@ -19,7 +19,7 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 
 	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
-		fmt.Errorf("Error occured: %v\n", err)
+		fmt.Errorf("Error occured: %s\n", err)
 		return
 	}
 
@@ -87,7 +87,7 @@ func main() {
 
 	startUrl, err := startUrl()
 	if err != nil {
-		fmt.Errorf("Error occured: %v\n", err)
+		fmt.Errorf("Error occured: %s\n", err)
 		os.Exit(1)
 	}
 

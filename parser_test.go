@@ -54,7 +54,7 @@ func TestParser(t *testing.T) {
 
 	resources, links, err := fetcher.Parse("https://example.com/", reader)
 	if err != nil {
-		t.Error("Error: %v", err)
+		t.Error("Error: %s\n", err)
 	}
 
 	// Check resources.
