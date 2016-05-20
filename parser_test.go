@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
-	"fmt"
 )
 
 func TestParser(t *testing.T) {
@@ -26,20 +26,28 @@ func TestParser(t *testing.T) {
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 <iframe width="560" height="315" src="http://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
 <iframe width="560" height="315" src="//www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
+<object type="application/x-shockwave-flash" data="http://www.example.com/flash/insecure.swf" width="400" height="300">
+    <param name="quality" value="high">
+    <param name="wmode" value="opaque">
+</object>
+<object type="application/x-shockwave-flash" data="https://www.example.com/flash/secure.swf" width="400" height="300">
+    <param name="quality" value="high">
+    <param name="wmode" value="opaque">
+</object>
 </body>`)
 
 	expected_resources := map[string]int{
-		"http://example.com/images/test.png": 0,
-		"http://www.youtube.com/embed/0sRPY3WWSNc": 1,
+		"http://example.com/images/test.png":        0,
+		"http://www.youtube.com/embed/0sRPY3WWSNc":  1,
+		"http://www.example.com/flash/insecure.swf": 2,
 	}
-
 
 	expected_links := map[string]int{
 		"https://example.com/article/test1": 0,
-		"http://example.com/test2": 1,
-		"https://example.com/test3": 2,
-		"http://www.example.com/test3": 3,
-		"http://www.example.com/test4": 4,
+		"http://example.com/test2":          1,
+		"https://example.com/test3":         2,
+		"http://www.example.com/test3":      3,
+		"http://www.example.com/test4":      4,
 	}
 
 	fetcher := InsecureResourceFetcher{}

@@ -7,7 +7,7 @@ import (
 // Thread-safe registry for processed urls.
 type Registry struct {
 	processed map[string]int
-	mux  sync.Mutex
+	mux       sync.Mutex
 }
 
 // Add a processed url to the registry.

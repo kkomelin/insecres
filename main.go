@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"time"
-	"flag"
-	"os"
 	"errors"
+	"flag"
+	"fmt"
+	"os"
 	"strings"
+	"time"
 )
 
 // Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
@@ -85,7 +85,7 @@ func startUrl() (string, error) {
 
 func main() {
 
-	startUrl, err := startUrl();
+	startUrl, err := startUrl()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

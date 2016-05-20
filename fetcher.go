@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"crypto/tls"
+	"net/http"
 )
 
 type Fetcher interface {
