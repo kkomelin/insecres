@@ -79,7 +79,7 @@ func startUrl() (string, error) {
 	args := flag.Args()
 
 	if len(args) < 1 {
-		return "", errors.New("Please specify the HTTPS address of the site, e.g. https://example.com")
+		return "", errors.New("Please specify a starting point, e.g. https://example.com")
 	}
 
 	return args[0], nil
