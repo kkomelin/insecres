@@ -19,6 +19,7 @@ func TestParser(t *testing.T) {
 <a href="/article/test1">Relative link</a>
 <a href="http://example.com/test2">Absolute HTTP link</a>
 <a href="https://example.com/test3">Absolute HTTPS link</a>
+<a href="http://www.example.com/test3">Absolute HTTPS link</a>
 <a href="https://www.youtube.com/watch?v=yIhJEO6QvFA">External link</a>
 <a href="//www.youtube.com/watch?v=o4cM2KUdfTg">Reproduces bug in Go url.isAbs()</a>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0sRPY3WWSNc" frameborder="0" allowfullscreen></iframe>
@@ -27,14 +28,15 @@ func TestParser(t *testing.T) {
 </body>`)
 
 	expected_resources := []string{
-		"http://example.com/images/test.png",
-		"http://www.youtube.com/embed/0sRPY3WWSNc",
+		0: "http://example.com/images/test.png",
+		1: "http://www.youtube.com/embed/0sRPY3WWSNc",
 	}
 
 	expected_links := []string{
-		"https://example.com/article/test1",
-		"http://example.com/test2",
-		"https://example.com/test3",
+		0: "https://example.com/article/test1",
+		1: "http://example.com/test2",
+		2: "https://example.com/test3",
+		3: "http://www.example.com/test3",
 	}
 
 	fetcher := InsecureResourceFetcher{}
@@ -44,6 +46,7 @@ func TestParser(t *testing.T) {
 		t.Error("Error: %v", err)
 	}
 
+	// Check resources.
 	fmt.Printf("Resources: %q\n", resources)
 
 	if len(resources) != len(expected_resources) {
@@ -56,6 +59,7 @@ func TestParser(t *testing.T) {
 		}
 	}
 
+	// Check links.
 	fmt.Printf("Links: %q\n", links)
 
 	if len(links) != len(expected_links) {
@@ -64,7 +68,7 @@ func TestParser(t *testing.T) {
 	} else {
 		for i := 0; i < len(expected_links); i++ {
 			if links[i] != expected_links[i] {
-				t.Errorf("Link url %d is incorrect. Expected: %s, Given: %s", i, expected_links[0], links[0])
+				t.Errorf("Link url %d is incorrect. Expected: %s, Given: %s", i, expected_links[i], links[i])
 			}
 		}
 	}

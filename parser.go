@@ -111,9 +111,8 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 		// Return result if the uri is absolute.
 		if uri.IsAbs() || (uri.Host != "" && strings.HasPrefix(uri.String(), "//")) {
 
-			// Ignore external urls.
-			// TODO: consider urls with WWW and without WWW as the same.
-			if uri.Host != baseUrl.Host {
+			// Ignore external urls considering urls w/ WWW and w/o WWW as the same.
+			if strings.TrimPrefix(uri.Host, "www.") != strings.TrimPrefix(baseUrl.Host, "www.") {
 				return "", errors.New("Url is expernal. Skipped.")
 			}
 

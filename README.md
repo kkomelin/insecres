@@ -28,9 +28,10 @@ go get github.com/kkomelin/httpsrescheck
 
 ## Roadmap
 
-- Check OBJECT tag
+- Check OBJECT tags
 - Implement debug option and hide url log by default
 - Improve output format (CSV?)
 - Handle trailing slash (https://example.com and https://example.com/)
-- Handle domains w/ and w/o WWW
 - Add some Sleep between requests to prevent blacklisting
+- ~~Handle domains w/ and w/o WWW~~
+- ~~Check IFRAME tags~~
