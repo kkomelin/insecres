@@ -6,6 +6,12 @@ import (
 	"os"
 	"strings"
 	"time"
+	"math/rand"
+)
+
+const (
+	// The goal is to wait for some milliseconds before exit so that all goroutines can finish.
+	beforeEngTimeout int = 2000
 )
 
 // Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
@@ -27,9 +33,18 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 	}
 
 	for _, url := range pageUrls {
+		// Random pause before sending to the main thread.
+		delayBetweenRequests()
 		queue <- url
 	}
+}
 
+// Implement random pause before sending the next request to
+// (no more than half of beforeEngTimeout constant).
+// It is one of the measures to prevent banning by the server.
+func delayBetweenRequests() {
+	randNum := rand.Intn(beforeEngTimeout/2)
+	time.Sleep(time.Duration(randNum) * time.Millisecond)
 }
 
 // Crawl pages starting with url and find insecure resources.
@@ -43,7 +58,7 @@ func crawl(url string, fetcher Fetcher) {
 
 	go fetchUrl(url, queue, registry)
 
-	tick := time.Tick(2000 * time.Millisecond)
+	tick := time.Tick(time.Duration(beforeEngTimeout) * time.Millisecond)
 
 	flag := false
 	for {
@@ -55,6 +70,7 @@ func crawl(url string, fetcher Fetcher) {
 			if !registry.IsNew(url) {
 				continue
 			}
+
 			go fetchUrl(url, queue, registry)
 		case <-tick:
 			if flag {

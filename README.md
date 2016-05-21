@@ -14,8 +14,9 @@ After some research of existing tools, which did not fit my needs, I decided to 
 
 ## Features
 
-- Crawl all site pages in parallel
-- Find IMG, IFRAME and OBJECT resources with absolute HTTP urls
+- Crawls all site pages in parallel
+- Finds IMG, IFRAME and OBJECT resources with absolute HTTP urls
+- Uses a random delay between requests to prevent blacklisting
 
 ## Installation
 
