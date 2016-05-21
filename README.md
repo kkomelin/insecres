@@ -1,4 +1,5 @@
 # insecuRes - Insecure Resource Finder
+[![Build Status](https://travis-ci.org/kkomelin/insecures)](https://travis-ci.org/kkomelin/insecures)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kkomelin/insecures)](https://goreportcard.com/report/github.com/kkomelin/insecures)
 
 A console tool that finds insecure resources on HTTPS sites.
