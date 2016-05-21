@@ -17,20 +17,18 @@ const (
 // Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
 func fetchUrl(url string, queue chan string, registry *Registry) {
 
+	fmt.Print(".")
+
 	// Lock url so that no one other goroutine can process it.
 	registry.MarkAsProcessed(url)
 
-	fetcher := ResourceAndLinkFetcher{}
-
-	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
+	insecureResourceUrls, pageUrls, err := (ResourceAndLinkFetcher{}).Fetch(url)
 	if err != nil {
 		fmt.Printf("Error occured: %s\n", err)
 		return
 	}
 
-	for _, insecureResourceUrl := range insecureResourceUrls {
-		fmt.Printf("%s: %s\n", url, insecureResourceUrl)
-	}
+	displayPageResources(url, insecureResourceUrls)
 
 	for _, url := range pageUrls {
 		// Random pause before sending to the main thread.
@@ -39,12 +37,30 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 	}
 }
 
+// Displays page resources.
+func displayPageResources(url string, resources []string) {
+	if (len(resources) > 0) {
+		fmt.Printf("\n%s:\n", url)
+		for _, insecureResourceUrl := range resources {
+			fmt.Printf("- %s\n", insecureResourceUrl)
+		}
+	}
+}
+
 // Implement random pause before sending the next request to
-// (no more than half of beforeEngTimeout constant).
+// (no more than beforeEngTimeout/ and no less than beforeEngTimeout/4 constant).
 // It is one of the measures to prevent banning by the server.
 func delayBetweenRequests() {
-	randNum := rand.Intn(beforeEngTimeout/2)
+	randNum := randomInRange(beforeEngTimeout/4, beforeEngTimeout/2)
 	time.Sleep(time.Duration(randNum) * time.Millisecond)
+}
+
+// Returns a random number in a given range.
+// The idea has been borrowed from http://golangcookbook.blogspot.ru/2012/11/generate-random-number-in-given-range.html
+// and improved.
+func randomInRange(min, max int) int {
+	rand.Seed(time.Now().Unix() + rand.Int63n(200))
+	return rand.Intn(max - min) + min
 }
 
 // Crawl pages starting with url and find insecure resources.
@@ -107,7 +123,7 @@ func main() {
 	}
 
 	fmt.Println("-----")
-	fmt.Println("Insecure resources (page: resource):")
+	fmt.Println("Insecure resources (grouped by page):")
 	fmt.Println("-----")
 
 	crawl(startUrl, ResourceAndLinkFetcher{})
