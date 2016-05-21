@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"errors"
 )
 
 func TestParser(t *testing.T) {
@@ -54,7 +55,7 @@ func TestParser(t *testing.T) {
 
 	resources, links, err := fetcher.Parse("https://example.com/", reader)
 	if err != nil {
-		t.Error("Error: %s\n", err)
+		t.Fatalf("fetcher.Parse has returned error: %s\n", err)
 	}
 
 	// Check resources.
