@@ -31,7 +31,7 @@ go get github.com/kkomelin/insecures
 
 ## Roadmap
 
-- Check AUDIO and VIDEO tags
+- Handle AUDIO and VIDEO tags
 - Implement debug option and hide url log by default
 - Improve output format (CSV?)
 - Add some Sleep between requests to prevent blacklisting
