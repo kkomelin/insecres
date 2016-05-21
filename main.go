@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -19,7 +18,7 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 
 	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
-		fmt.Errorf("Error occured: %s\n", err)
+		fmt.Printf("Error occured: %s\n", err)
 		return
 	}
 
@@ -60,7 +59,7 @@ func crawl(url string, fetcher Fetcher) {
 		case <-tick:
 			if flag {
 				fmt.Println("-----")
-				fmt.Printf("Analized pages:\n")
+				fmt.Println("Analized pages:")
 				fmt.Println("-----")
 				fmt.Println(registry)
 				return
@@ -77,7 +76,7 @@ func startUrl() (string, error) {
 	args := flag.Args()
 
 	if len(args) < 1 {
-		return "", errors.New("Please specify a starting point, e.g. https://example.com")
+		return "", fmt.Errorf("Please specify a starting point, e.g. https://example.com")
 	}
 
 	return args[0], nil
@@ -87,12 +86,12 @@ func main() {
 
 	startUrl, err := startUrl()
 	if err != nil {
-		fmt.Errorf("Error occured: %s\n", err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	fmt.Println("-----")
-	fmt.Printf("Insecure resources (page: resource):\n")
+	fmt.Println("Insecure resources (page: resource):")
 	fmt.Println("-----")
 
 	crawl(startUrl, InsecureResourceFetcher{})

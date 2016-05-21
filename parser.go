@@ -1,11 +1,11 @@
 package main
 
 import (
-	"errors"
 	"golang.org/x/net/html"
 	"io"
 	"net/url"
 	"strings"
+	"fmt"
 )
 
 type Parser interface {
@@ -96,13 +96,13 @@ func (f InsecureResourceFetcher) processResourceToken(token html.Token) (string,
 
 		// Ignore relative and secure urls.
 		if !uri.IsAbs() || uri.Scheme == "https" || (uri.Host != "" && strings.HasPrefix(uri.String(), "//")) {
-			return "", errors.New("Uri is relative or secure. Skipped.")
+			return "", fmt.Errorf("Uri is relative or secure. Skipped.")
 		}
 
 		return uri.String(), nil
 	}
 
-	return "", errors.New("Src has not been found. Skipped.")
+	return "", fmt.Errorf("Src has not been found. Skipped.")
 }
 
 // Determines whether the token passed is a link token.
@@ -125,7 +125,7 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 
 		// Ignore anchors.
 		if strings.HasPrefix(attr.Val, "#") {
-			return "", errors.New("Url is an anchor. Skipped.")
+			return "", fmt.Errorf("Url is an anchor. Skipped.")
 		}
 
 		uri, err := url.Parse(attr.Val)
@@ -143,7 +143,7 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 
 			// Ignore external urls considering urls w/ WWW and w/o WWW as the same.
 			if strings.TrimPrefix(uri.Host, "www.") != strings.TrimPrefix(baseUrl.Host, "www.") {
-				return "", errors.New("Url is expernal. Skipped.")
+				return "", fmt.Errorf("Url is expernal. Skipped.")
 			}
 
 			return strings.TrimSuffix(uri.String(), "/"), nil
@@ -155,7 +155,7 @@ func (f InsecureResourceFetcher) processLinkToken(token html.Token, base string)
 		return strings.TrimSuffix(absoluteUrl.String(), "/"), nil
 	}
 
-	return "", errors.New("Src has not been found. Skipped.")
+	return "", fmt.Errorf("Src has not been found. Skipped.")
 }
 
 func (f InsecureResourceFetcher) convertToAbsolute(href, base *url.URL) *url.URL {

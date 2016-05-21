@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"errors"
 )
 
 func TestParser(t *testing.T) {
