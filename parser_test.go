@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// TestParser tests fetcher.Parse method and its results.
 func TestParser(t *testing.T) {
 
 	reader := strings.NewReader(`<!DOCTYPE html>
@@ -50,7 +51,7 @@ func TestParser(t *testing.T) {
 		"http://www.example.com/test4":      4,
 	}
 
-	fetcher := InsecureResourceFetcher{}
+	fetcher := ResourceAndLinkFetcher{}
 
 	resources, links, err := fetcher.Parse("https://example.com/", reader)
 	if err != nil {

@@ -14,7 +14,7 @@ func fetchUrl(url string, queue chan string, registry *Registry) {
 	// Lock url so that no one other goroutine can process it.
 	registry.MarkAsProcessed(url)
 
-	fetcher := InsecureResourceFetcher{}
+	fetcher := ResourceAndLinkFetcher{}
 
 	insecureResourceUrls, pageUrls, err := fetcher.Fetch(url)
 	if err != nil {
@@ -94,5 +94,5 @@ func main() {
 	fmt.Println("Insecure resources (page: resource):")
 	fmt.Println("-----")
 
-	crawl(startUrl, InsecureResourceFetcher{})
+	crawl(startUrl, ResourceAndLinkFetcher{})
 }

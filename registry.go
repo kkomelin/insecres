@@ -4,13 +4,13 @@ import (
 	"sync"
 )
 
-// Thread-safe registry for processed urls.
+// Registry is a thread-safe storage for processed urls.
 type Registry struct {
 	processed map[string]int
 	mux       sync.Mutex
 }
 
-// Add a processed url to the registry.
+// MarkAsProcessed adds a processed url to the registry.
 func (r *Registry) MarkAsProcessed(url string) {
 	r.mux.Lock()
 	defer r.mux.Unlock()
@@ -18,7 +18,7 @@ func (r *Registry) MarkAsProcessed(url string) {
 	r.processed[url] = 1
 }
 
-// Check whether a url is new.
+// IsNew checks whether a url is new.
 func (r *Registry) IsNew(url string) bool {
 	r.mux.Lock()
 	defer r.mux.Unlock()
@@ -30,7 +30,7 @@ func (r *Registry) IsNew(url string) bool {
 	return true
 }
 
-// Define our own way to output the processed urls.
+// String defines our own way to output the processed urls.
 // [url1]\n
 // [url2]\n
 func (r *Registry) String() string {
