@@ -36,11 +36,11 @@ $GOPATH/bin/insecures https://example.com
 
 ## Roadmap
 
-- Handle AUDIO and VIDEO tags
-- Implement debug option and hide url log by default
-- Improve output format (CSV?)
-- Add some Sleep between requests to prevent blacklisting
-- ~~Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)~~
-- ~~Handle domains w/ and w/o WWW~~
-- ~~Check IFRAME tags~~
-- ~~Check OBJECT tags~~
+- [ ] Handle AUDIO and VIDEO tags
+- [ ] Implement verbose mode and hide redundant information from display by default
+- [ ] Print results to a file (CSV?)
+- [x] Add random delay between requests to prevent blacklisting
+- [x] Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)
+- [x] Handle domains w/ and w/o WWW
+- [x] Handle IFRAME tags
+- [x] Handle OBJECT tags
