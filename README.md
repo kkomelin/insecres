@@ -20,6 +20,10 @@ After some research of existing tools, which did not fit my needs, I decided to 
 
 ## Installation
 
+First of all, [install Go](https://golang.org/doc/install).
+
+After that, run the following command:
+
 ```
 go get github.com/kkomelin/insecures
 ```
