@@ -27,7 +27,7 @@ go get github.com/kkomelin/insecures
 ## Usage
 
 ```
-./insecures https://example.com
+$GOPATH/bin/insecures https://example.com
 ```
 
 ## Roadmap
