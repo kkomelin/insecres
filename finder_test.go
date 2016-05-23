@@ -9,6 +9,8 @@ import (
 // TestParse tests fetcher.Parse method and its results.
 func TestParse(t *testing.T) {
 
+	fmt.Println("TestParse")
+
 	reader := strings.NewReader(`<!DOCTYPE html>
 <html lang="en"><head><title></title></head>
 <body>

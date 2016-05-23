@@ -2,10 +2,13 @@ package main
 
 import (
 	"testing"
+	"fmt"
 )
 
 // TestRandomInRange tests randomInRange function.
 func TestRandomInRange(t *testing.T) {
+
+	fmt.Println("TestRandomInRange")
 
 	tests := []struct {
 		min            int
