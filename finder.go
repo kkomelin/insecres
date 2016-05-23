@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// ResourceAndLinkFetcher contains a map of fetched urls and resources grouped by source urls.
+// ResourceAndLinkFinder encapsulates logic that is used for finding page link urls and resource urls..
 type ResourceAndLinkFinder struct{}
 
 // Fetch page by url and returns response body.

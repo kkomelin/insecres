@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/kkomelin/insecres/interfaces"
 	"math/rand"
 	"strings"
 	"time"
-	"github.com/kkomelin/insecres/interfaces"
 )
 
 // Goroutine callback, which fetches and parses the passed url
