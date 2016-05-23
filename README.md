@@ -1,6 +1,7 @@
 # insecRes - Insecure Resource Finder
 [![Build Status](https://travis-ci.org/kkomelin/insecres.svg)](https://travis-ci.org/kkomelin/insecres)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kkomelin/insecres)](https://goreportcard.com/report/github.com/kkomelin/insecres)
+[![GoDoc](https://godoc.org/github.com/kkomelin/insecres?status.png)](http://godoc.org/github.com/kkomelin/insecres)
 
 A console tool that finds insecure resources on HTTPS sites.
 It is written in Go language and uses the power of "multi-threading" (goroutines) to crawl and parse site pages.
