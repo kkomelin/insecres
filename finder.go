@@ -50,15 +50,21 @@ func (f ResourceAndLinkFinder) Parse(baseUrl string, httpBody io.Reader) (resour
 
 		switch {
 		case f.isResourceToken(token):
-			uri, err := f.processResourceToken(token)
-			if err == nil {
+			uris, err := f.processResourceToken(token)
+			if err != nil {
+				continue
+			}
+
+			for _, uri := range uris {
 				resourceMap[uri] = true
 			}
 		case f.isLinkToken(token):
 			uri, err := f.processLinkToken(token, baseUrl)
-			if err == nil {
-				linkMap[uri] = true
+			if err != nil {
+				continue
 			}
+
+			linkMap[uri] = true
 		}
 	}
 
@@ -79,65 +85,75 @@ func (f ResourceAndLinkFinder) Parse(baseUrl string, httpBody io.Reader) (resour
 
 // Determine whether the token passed is a resource token.
 func (f ResourceAndLinkFinder) isResourceToken(token html.Token) bool {
+
 	switch {
-	case token.Type == html.SelfClosingTagToken && token.DataAtom.String() == "img":
+	case token.Type == html.SelfClosingTagToken && token.Data == "img":
 		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "iframe":
-		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "object":
-		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "video":
-		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "audio":
-		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "source":
-		return true
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "track":
-		return true
-	default:
-		return false
+	case token.Type == html.StartTagToken:
+		switch token.Data {
+		case
+			"iframe",
+			"object",
+			"video",
+			"audio",
+			"source",
+			"track":
+			return true
+		}
 	}
+	return false
 }
 
-// Process resource token in order to get a url of the resource.
-func (f ResourceAndLinkFinder) processResourceToken(token html.Token) (string, error) {
+// Determine whether the token passed is a resource token.
+func (f ResourceAndLinkFinder) isTargetedResourceTokenAttribute(token html.Token, attribute html.Attribute) bool {
 
-	tag := token.DataAtom.String()
+	if token.Data == "object" && attribute.Key == "data" {
+		return true
+	}
+
+	if attribute.Key == "src" || attribute.Key == "poster" {
+		return true
+	}
+
+	return false
+}
+
+// Process resource token in order to get urls of the resources (a few if it is video, for example).
+func (f ResourceAndLinkFinder) processResourceToken(token html.Token) (map[string]string, error) {
+
+	result := make(map[string]string)
 
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
 
-		if tag == "object" {
-			if attr.Key != "data" {
-				continue
-			}
-
-		} else {
-			if attr.Key != "src" && attr.Key != "poster" {
-				continue
-			}
+		if !f.isTargetedResourceTokenAttribute(token, attr) {
+			continue
 		}
 
 		uri, err := url.Parse(attr.Val)
 		if err != nil {
-			return "", err
+			continue
 		}
 
 		// Ignore relative and secure urls.
 		if !uri.IsAbs() || uri.Scheme == "https" || (uri.Host != "" && strings.HasPrefix(uri.String(), "//")) {
-			return "", fmt.Errorf("Uri is relative or secure. Skipped.")
+			continue
 		}
 
-		return uri.String(), nil
+		result[attr.Key] = uri.String()
 	}
 
-	return "", fmt.Errorf("Src has not been found. Skipped.")
+	if len(result) == 0 {
+		return nil, fmt.Errorf("Targeted attributes have not been found. Skipped.")
+	}
+
+	return result, nil
 }
 
 // Determine whether the token passed is a link token.
 func (f ResourceAndLinkFinder) isLinkToken(token html.Token) bool {
 	switch {
-	case token.Type == html.StartTagToken && token.DataAtom.String() == "a":
+	case token.Type == html.StartTagToken && token.Data == "a":
 		return true
 	default:
 		return false

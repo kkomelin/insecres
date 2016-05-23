@@ -16,7 +16,11 @@ After some research of existing tools, which did not fit my needs, I decided to 
 ## Features
 
 - Crawls all site pages in parallel
-- Finds IMG, IFRAME and OBJECT resources with absolute HTTP urls
+- Finds the following resources with absolute HTTP (insecure) urls:
+  - IMG
+  - IFRAME
+  - OBJECT
+  - AUDIO, VIDEO, SOURCE, TRACK
 - Uses a random delay between requests to prevent blacklisting
 
 ## Installation
@@ -44,9 +48,4 @@ $GOPATH/bin/insecres https://example.com
 - [x] Handle domains w/ and w/o WWW
 - [x] Support IFRAME tags
 - [x] Support OBJECT tags
-- [x] Support AUDIO, VIDEO (partially, see Known limitations section), SOURCE and TRACK tags
-
-## Known limitations
-
-Currently golang.org/x/net/html library ignores video[poster] attribute for some reasons.
-It means that insecrRes doesn't detect insecure posters at the moment.
+- [x] Support AUDIO, VIDEO, SOURCE and TRACK tags

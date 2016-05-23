@@ -64,9 +64,8 @@ func TestParse(t *testing.T) {
 		"http://www.example.com/audio_in_source.ogg": 0,
 		// video[src]
 		"http://www.example.com/video.mp4": 0,
-		// FIXME: Currently golang.org/x/net/html library ignores video[poster] attribute for some reasons. We need to do something with that.
 		// video[poster]
-		// "http://www.example.com/poster.jpg": 0,
+		"http://www.example.com/poster.jpg": 0,
 		// video track[src]
 		"http://www.example.com/video_track.vtt": 0,
 		// video source[src]
