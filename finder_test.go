@@ -37,20 +37,48 @@ func TestParse(t *testing.T) {
     <param name="quality" value="high">
     <param name="wmode" value="opaque">
 </object>
+<audio src="http://www.example.com/audio.ogg" autoplay>
+  Your browser does not support HTML5 audio tag.
+  <track kind="captions" src="http://www.example.com/audio_track.vtt" srclang="en" label="English">
+  <source src="http://www.example.com/audio_in_source.ogg" type="audio/ogg">
+</audio>
+<video src="http://www.example.com/video.mp4" poster="http://www.example.com/poster.jpg" autoplay>
+   Your browser doesn't support HTML5 video tag.
+   <track kind="subtitles" src="http://www.example.com/video_track.vtt" srclang="en" label="English">
+   <source src="http://www.example.com/video_in_source.mp4" type="video/mp4">
+</video>
 </body>`)
 
 	expectedResources := map[string]int{
-		"http://example.com/images/test.png":        0,
-		"http://www.youtube.com/embed/0sRPY3WWSNc":  1,
-		"http://www.example.com/flash/insecure.swf": 2,
+		// img[src]
+		"http://example.com/images/test.png": 0,
+		// iframe[src]
+		"http://www.youtube.com/embed/0sRPY3WWSNc": 0,
+		// object[data]
+		"http://www.example.com/flash/insecure.swf": 0,
+		// audio[src]
+		"http://www.example.com/audio.ogg": 0,
+		// audio track[src]
+		"http://www.example.com/audio_track.vtt": 0,
+		// audio source[src]
+		"http://www.example.com/audio_in_source.ogg": 0,
+		// video[src]
+		"http://www.example.com/video.mp4": 0,
+		// FIXME: Currently golang.org/x/net/html library ignores video[poster] attribute for some reasons. We need to do something with that.
+		// video[poster]
+		// "http://www.example.com/poster.jpg": 0,
+		// video track[src]
+		"http://www.example.com/video_track.vtt": 0,
+		// video source[src]
+		"http://www.example.com/video_in_source.mp4": 0,
 	}
 
 	expectedLinks := map[string]int{
 		"https://example.com/article/test1": 0,
-		"http://example.com/test2":          1,
-		"https://example.com/test3":         2,
-		"http://www.example.com/test3":      3,
-		"http://www.example.com/test4":      4,
+		"http://example.com/test2":          0,
+		"https://example.com/test3":         0,
+		"http://www.example.com/test3":      0,
+		"http://www.example.com/test4":      0,
 	}
 
 	resources, links, err := (ResourceAndLinkFinder{}).Parse("https://example.com/", reader)

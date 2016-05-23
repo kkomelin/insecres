@@ -86,6 +86,14 @@ func (f ResourceAndLinkFinder) isResourceToken(token html.Token) bool {
 		return true
 	case token.Type == html.StartTagToken && token.DataAtom.String() == "object":
 		return true
+	case token.Type == html.StartTagToken && token.DataAtom.String() == "video":
+		return true
+	case token.Type == html.StartTagToken && token.DataAtom.String() == "audio":
+		return true
+	case token.Type == html.StartTagToken && token.DataAtom.String() == "source":
+		return true
+	case token.Type == html.StartTagToken && token.DataAtom.String() == "track":
+		return true
 	default:
 		return false
 	}
@@ -98,13 +106,14 @@ func (f ResourceAndLinkFinder) processResourceToken(token html.Token) (string, e
 
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
+
 		if tag == "object" {
 			if attr.Key != "data" {
 				continue
 			}
 
 		} else {
-			if attr.Key != "src" {
+			if attr.Key != "src" && attr.Key != "poster" {
 				continue
 			}
 		}

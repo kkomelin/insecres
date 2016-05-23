@@ -37,11 +37,16 @@ $GOPATH/bin/insecres https://example.com
 
 ## Roadmap
 
-- [ ] Handle AUDIO and VIDEO tags
 - [ ] Implement verbose mode and hide redundant information from display by default
 - [ ] Print results to a file (CSV?)
 - [x] Add random delay between requests to prevent blacklisting
 - [x] Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)
 - [x] Handle domains w/ and w/o WWW
-- [x] Handle IFRAME tags
-- [x] Handle OBJECT tags
+- [x] Support IFRAME tags
+- [x] Support OBJECT tags
+- [x] Support AUDIO, VIDEO (partially, see Known limitations section), SOURCE and TRACK tags
+
+## Known limitations
+
+Currently golang.org/x/net/html library ignores video[poster] attribute for some reasons.
+It means that insecrRes doesn't detect insecure posters at the moment.
