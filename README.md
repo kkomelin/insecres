@@ -1,6 +1,6 @@
-# insecuRes - Insecure Resource Finder
-[![Build Status](https://travis-ci.org/kkomelin/insecures.svg)](https://travis-ci.org/kkomelin/insecures)
-[![Go Report Card](https://goreportcard.com/badge/github.com/kkomelin/insecures)](https://goreportcard.com/report/github.com/kkomelin/insecures)
+# insecRes - Insecure Resource Finder
+[![Build Status](https://travis-ci.org/kkomelin/insecres.svg)](https://travis-ci.org/kkomelin/insecres)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kkomelin/insecres)](https://goreportcard.com/report/github.com/kkomelin/insecres)
 
 A console tool that finds insecure resources on HTTPS sites.
 It is written in Go language and uses the power of "multi-threading" (goroutines) to crawl and parse site pages.
@@ -25,13 +25,13 @@ First of all, [install Go](https://golang.org/doc/install).
 After that, run the following command:
 
 ```
-go get github.com/kkomelin/insecures
+go get github.com/kkomelin/insecres
 ```
 
 ## Usage
 
 ```
-$GOPATH/bin/insecures https://example.com
+$GOPATH/bin/insecres https://example.com
 ```
 
 ## Roadmap
