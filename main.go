@@ -27,9 +27,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("-----")
-	fmt.Println("Insecure resources (grouped by page):")
-	fmt.Println("-----")
-
-	Crawl(startUrl, ResourceAndLinkFetcher{})
+	Crawl(startUrl)
 }

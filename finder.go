@@ -1,23 +1,41 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"golang.org/x/net/html"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 )
 
-// Parser represents a tool that parses a page to find links and insecure resources.
-type Parser interface {
-	// Parse HTML in order to find non-HTTPS resources.
-	Parse(baseUrl string, httpBody io.Reader) (resourceUrls []string, linkUrls []string, err error)
+// ResourceAndLinkFetcher contains a map of fetched urls and resources grouped by source urls.
+type ResourceAndLinkFinder struct{}
+
+// Fetch page by url and returns response body.
+func (f ResourceAndLinkFinder) Fetch(url string) (responseBody io.ReadCloser, err error) {
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
+	client := http.Client{Transport: transport}
+
+	response, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	//defer response.Body.Close()
+
+	return response.Body, nil
 }
 
 // Parse takes a reader object and returns a slice of insecure resource urls
 // found in the HTML.
 // It does not close the reader. The reader should be closed from the outside.
-func (f ResourceAndLinkFetcher) Parse(baseUrl string, httpBody io.Reader) (resourceUrls []string, linkUrls []string, err error) {
+func (f ResourceAndLinkFinder) Parse(baseUrl string, httpBody io.Reader) (resourceUrls []string, linkUrls []string, err error) {
 
 	resourceMap := make(map[string]bool)
 	linkMap := make(map[string]bool)
@@ -60,7 +78,7 @@ func (f ResourceAndLinkFetcher) Parse(baseUrl string, httpBody io.Reader) (resou
 }
 
 // Determine whether the token passed is a resource token.
-func (f ResourceAndLinkFetcher) isResourceToken(token html.Token) bool {
+func (f ResourceAndLinkFinder) isResourceToken(token html.Token) bool {
 	switch {
 	case token.Type == html.SelfClosingTagToken && token.DataAtom.String() == "img":
 		return true
@@ -74,7 +92,7 @@ func (f ResourceAndLinkFetcher) isResourceToken(token html.Token) bool {
 }
 
 // Process resource token in order to get a url of the resource.
-func (f ResourceAndLinkFetcher) processResourceToken(token html.Token) (string, error) {
+func (f ResourceAndLinkFinder) processResourceToken(token html.Token) (string, error) {
 
 	tag := token.DataAtom.String()
 
@@ -108,7 +126,7 @@ func (f ResourceAndLinkFetcher) processResourceToken(token html.Token) (string, 
 }
 
 // Determine whether the token passed is a link token.
-func (f ResourceAndLinkFetcher) isLinkToken(token html.Token) bool {
+func (f ResourceAndLinkFinder) isLinkToken(token html.Token) bool {
 	switch {
 	case token.Type == html.StartTagToken && token.DataAtom.String() == "a":
 		return true
@@ -118,7 +136,7 @@ func (f ResourceAndLinkFetcher) isLinkToken(token html.Token) bool {
 }
 
 // Process <A> token in order to get an absolute url of the link.
-func (f ResourceAndLinkFetcher) processLinkToken(token html.Token, base string) (string, error) {
+func (f ResourceAndLinkFinder) processLinkToken(token html.Token, base string) (string, error) {
 
 	// Loop for tag attributes.
 	for _, attr := range token.Attr {
@@ -162,6 +180,6 @@ func (f ResourceAndLinkFetcher) processLinkToken(token html.Token, base string) 
 }
 
 // Convert a relative url to absolute.
-func (f ResourceAndLinkFetcher) convertToAbsolute(source, base *url.URL) *url.URL {
+func (f ResourceAndLinkFinder) convertToAbsolute(source, base *url.URL) *url.URL {
 	return base.ResolveReference(source)
 }

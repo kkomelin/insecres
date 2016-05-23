@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-// TestParser tests fetcher.Parse method and its results.
-func TestParser(t *testing.T) {
+// TestParse tests fetcher.Parse method and its results.
+func TestParse(t *testing.T) {
 
 	reader := strings.NewReader(`<!DOCTYPE html>
 <html lang="en"><head><title></title></head>
@@ -51,9 +51,7 @@ func TestParser(t *testing.T) {
 		"http://www.example.com/test4":      4,
 	}
 
-	fetcher := ResourceAndLinkFetcher{}
-
-	resources, links, err := fetcher.Parse("https://example.com/", reader)
+	resources, links, err := (ResourceAndLinkFinder{}).Parse("https://example.com/", reader)
 	if err != nil {
 		t.Fatalf("fetcher.Parse has returned error: %s\n", err)
 	}

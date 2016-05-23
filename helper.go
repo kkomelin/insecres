@@ -6,17 +6,31 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+	"github.com/kkomelin/insecres/interfaces"
 )
 
-// Goroutine function fetches and parses the passed url in order to find insecure resources and next urls to fetch from.
-func fetchUrl(url string, queue chan string, registry *Registry) {
+// Goroutine callback, which fetches and parses the passed url
+// in order to find insecure resources and next urls to fetch from.
+func fetchPage(url string, queue chan string, registrar interfaces.Registrar, fetcher interfaces.Fetcher, parser interfaces.Parser) {
+
+	// Ignore processed urls.
+	if !registrar.IsNew(url) {
+		return
+	}
+	// Lock url so that no one other goroutine can process it.
+	registrar.Register(url)
 
 	fmt.Print(".")
 
-	// Lock url so that no one other goroutine can process it.
-	registry.MarkAsProcessed(url)
+	responseBody, err := fetcher.Fetch(url)
+	if err != nil {
+		fmt.Printf("Error occured: %s\n", err)
+		return
+	}
 
-	insecureResourceUrls, pageUrls, err := (ResourceAndLinkFetcher{}).Fetch(url)
+	defer responseBody.Close()
+
+	insecureResourceUrls, pageUrls, err := parser.Parse(url, responseBody)
 	if err != nil {
 		fmt.Printf("Error occured: %s\n", err)
 		return
@@ -67,30 +81,29 @@ func randomInRange(min, max int) int {
 }
 
 // Crawl pages starting from the passed url and find insecure resources.
-func Crawl(url string, fetcher Fetcher) {
+func Crawl(url string) {
 
 	url = strings.TrimSuffix(url, "/")
 
-	registry := &Registry{processed: make(map[string]int)}
+	registry := &ProcessedUrls{processed: make(map[string]int)}
+	finder := &ResourceAndLinkFinder{}
 
 	queue := make(chan string)
 
-	go fetchUrl(url, queue, registry)
+	go fetchPage(url, queue, registry, finder, finder)
+
+	fmt.Println("-----")
+	fmt.Println("Insecure resources (grouped by page):")
+	fmt.Println("-----")
 
 	tick := time.Tick(time.Duration(BeforeEngDelay) * time.Millisecond)
-
 	flag := false
 	for {
 		select {
 		case url := <-queue:
 			flag = false
 
-			// Ignore processed urls.
-			if !registry.IsNew(url) {
-				continue
-			}
-
-			go fetchUrl(url, queue, registry)
+			go fetchPage(url, queue, registry, finder, finder)
 		case <-tick:
 			if flag {
 				fmt.Println("-----")
