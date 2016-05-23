@@ -6,14 +6,16 @@ import (
 )
 
 const (
-	// The goal of BeforeEngTimeout is to wait for some time before exit
-	// so that all goroutines can finish.
+	// BeforeEngDelay defines time in milliseconds, which the program waits before exit
+	// so that all goroutines can finish and return results.
 	BeforeEngDelay int = 2000
-	// Before processing any new url we wait for some random time
-	// (between MinDelayBetweenRequests and MaxDelayBetweenRequests)
+	// MinDelayBetweenRequests is minimum time in milliseconds,
+	// which the program waits before processing any new url.
+	// We wait for some random time (between MinDelayBetweenRequests and MaxDelayBetweenRequests)
 	// to prevent blacklisting by the server.
 	MinDelayBetweenRequests int = 500
-	// See MinDelayBetweenRequests.
+	// MaxDelayBetweenRequests is maximum time in milliseconds,
+	// which the program waits before processing any new url.
 	MaxDelayBetweenRequests int = 1000
 )
 
