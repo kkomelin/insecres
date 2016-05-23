@@ -106,10 +106,14 @@ func Crawl(url string) {
 			go fetchPage(url, queue, registry, finder, finder)
 		case <-tick:
 			if flag {
-				fmt.Println("-----")
-				fmt.Println("Analized pages:")
-				fmt.Println("-----")
-				fmt.Println(registry)
+				// TODO: Implement a verbose mode when all crawled pages are also displayed.
+				if false {
+					fmt.Println("-----")
+					fmt.Println("Analized pages:")
+					fmt.Println("-----")
+					fmt.Println(registry)
+				}
+				fmt.Println("")
 				return
 			}
 			flag = true
