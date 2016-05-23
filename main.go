@@ -6,9 +6,15 @@ import (
 )
 
 const (
-	// The goal of beforeEngTimeout is to wait for some milliseconds before exit
+	// The goal of BeforeEngTimeout is to wait for some time before exit
 	// so that all goroutines can finish.
-	beforeEngTimeout int = 2000
+	BeforeEngDelay int = 2000
+	// Before processing any new url we wait for some random time
+	// (between MinDelayBetweenRequests and MaxDelayBetweenRequests)
+	// to prevent blacklisting by the server.
+	MinDelayBetweenRequests int = 500
+	// See MinDelayBetweenRequests.
+	MaxDelayBetweenRequests int = 1000
 )
 
 func main() {
@@ -23,5 +29,5 @@ func main() {
 	fmt.Println("Insecure resources (grouped by page):")
 	fmt.Println("-----")
 
-	crawl(startUrl, ResourceAndLinkFetcher{})
+	Crawl(startUrl, ResourceAndLinkFetcher{})
 }

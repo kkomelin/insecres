@@ -45,7 +45,7 @@ func displayPageResources(url string, resources []string) {
 // (no more than beforeEngTimeout/ and no less than beforeEngTimeout/4 constant).
 // It is one of the measures to prevent banning by the server.
 func delayBetweenRequests() {
-	randNum := randomInRange(beforeEngTimeout/4, beforeEngTimeout/2)
+	randNum := randomInRange(MinDelayBetweenRequests, MaxDelayBetweenRequests)
 	time.Sleep(time.Duration(randNum) * time.Millisecond)
 }
 
@@ -54,11 +54,20 @@ func delayBetweenRequests() {
 // and improved.
 func randomInRange(min, max int) int {
 	rand.Seed(time.Now().UTC().UnixNano())
+
+	if (min == 0 || max == 0) || (min > max) {
+		return 0
+	}
+
+	if min == max {
+		return min
+	}
+
 	return rand.Intn(max-min) + min
 }
 
-// Crawl pages starting with url and find insecure resources.
-func crawl(url string, fetcher Fetcher) {
+// Crawl pages starting from the passed url and find insecure resources.
+func Crawl(url string, fetcher Fetcher) {
 
 	url = strings.TrimSuffix(url, "/")
 
@@ -68,7 +77,7 @@ func crawl(url string, fetcher Fetcher) {
 
 	go fetchUrl(url, queue, registry)
 
-	tick := time.Tick(time.Duration(beforeEngTimeout) * time.Millisecond)
+	tick := time.Tick(time.Duration(BeforeEngDelay) * time.Millisecond)
 
 	flag := false
 	for {
