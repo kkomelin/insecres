@@ -35,14 +35,23 @@ go get github.com/kkomelin/insecres
 
 ## Usage
 
+- Find insecure resources on a site and print results to the console:
 ```
 $GOPATH/bin/insecres https://example.com
+```
+- Find insecure resources on a site and print results to a CSV file:
+```
+$GOPATH/bin/insecres -f="/home/user/report.csv" https://example.com
+```
+- Display usage guide:
+```
+$GOPATH/bin/insecres -h
 ```
 
 ## Roadmap
 
-- [ ] Implement verbose mode and hide redundant information from display by default
-- [ ] Print results to a file (CSV?)
+- [ ] Display result counters
+- [x] Implement an option for printing results to a CSV file
 - [x] Add random delay between requests to prevent blacklisting
 - [x] Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)
 - [x] Handle domains w/ and w/o WWW

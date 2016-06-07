@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"flag"
 )
 
 const (
@@ -19,13 +18,34 @@ const (
 	MaxDelayBetweenRequests int = 1000
 )
 
-func main() {
+var (
+	helpFlag   bool
+	reportFlag string
+)
 
-	startUrl, err := startUrl()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func main() {
+	// Find options.
+	flag.BoolVar(&helpFlag, "h", false, "")
+	flag.StringVar(&reportFlag, "f", "", "")
+	flag.Parse()
+
+	// Find argument.
+	args := flag.Args()
+	if len(args) < 1 {
+		displayHelp()
+		return
 	}
 
-	Crawl(startUrl)
+	// Display help.
+	if helpFlag {
+		displayHelp()
+		return
+	}
+
+	// Prepare file handler to use
+	if reportFlag != "" {
+		Crawl(args[0], reportFlag)
+	} else {
+		Crawl(args[0], "")
+	}
 }

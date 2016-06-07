@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/kkomelin/insecres/interfaces"
 	"math/rand"
@@ -11,7 +10,7 @@ import (
 
 // Goroutine callback, which fetches and parses the passed url
 // in order to find insecure resources and next urls to fetch from.
-func fetchPage(url string, queue chan string, registrar interfaces.Registrar, fetcher interfaces.Fetcher, parser interfaces.Parser) {
+func processPage(url string, queue chan string, registrar interfaces.Registrar, fetcher interfaces.Fetcher, parser interfaces.Parser, reporter interfaces.Reporter) {
 
 	// Ignore processed urls.
 	if !registrar.IsNew(url) {
@@ -36,7 +35,7 @@ func fetchPage(url string, queue chan string, registrar interfaces.Registrar, fe
 		return
 	}
 
-	displayPageResources(url, insecureResourceUrls)
+	reportPageResources(url, insecureResourceUrls, reporter)
 
 	for _, url := range pageUrls {
 		// Random pause before sending to the main thread.
@@ -45,14 +44,25 @@ func fetchPage(url string, queue chan string, registrar interfaces.Registrar, fe
 	}
 }
 
-// Displays page resources.
-func displayPageResources(url string, resources []string) {
-	if len(resources) > 0 {
-		fmt.Printf("\n%s:\n", url)
-		for _, insecureResourceUrl := range resources {
-			fmt.Printf("- %s\n", insecureResourceUrl)
-		}
+// Reports page resources.
+func reportPageResources(url string, resources []string, reporter interfaces.Reporter) error {
+	if len(resources) == 0 {
+		return nil
 	}
+
+	if !reporter.IsEmpty() {
+		for i, insecureResourceUrl := range resources {
+			resources[i] = url + ", " + insecureResourceUrl
+		}
+
+		return reporter.WriteLines(resources)
+	}
+
+	fmt.Printf("\n%s:\n", url)
+	for _, insecureResourceUrl := range resources {
+		fmt.Printf("- %s\n", insecureResourceUrl)
+	}
+	return nil
 }
 
 // Implement random pause before sending the next request to
@@ -81,20 +91,31 @@ func randomInRange(min, max int) int {
 }
 
 // Crawl pages starting from the passed url and find insecure resources.
-func Crawl(url string) {
+func Crawl(url, reportFile string) {
 
 	url = strings.TrimSuffix(url, "/")
 
-	registry := &ProcessedUrls{processed: make(map[string]int)}
+	report := &Report{}
+
+	// Print results to the file.
+	if reportFile != "" {
+		err := report.Open(reportFlag)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	} else { // Print results to console.
+		fmt.Println("-----")
+		fmt.Println("Insecure resources (grouped by page):")
+		fmt.Println("-----")
+	}
+
+	registry := &Processed{processed: make(map[string]int)}
 	finder := &ResourceAndLinkFinder{}
 
 	queue := make(chan string)
 
-	go fetchPage(url, queue, registry, finder, finder)
-
-	fmt.Println("-----")
-	fmt.Println("Insecure resources (grouped by page):")
-	fmt.Println("-----")
+	go processPage(url, queue, registry, finder, finder, report)
 
 	tick := time.Tick(time.Duration(BeforeEngDelay) * time.Millisecond)
 	flag := false
@@ -103,17 +124,21 @@ func Crawl(url string) {
 		case url := <-queue:
 			flag = false
 
-			go fetchPage(url, queue, registry, finder, finder)
+			go processPage(url, queue, registry, finder, finder, report)
 		case <-tick:
 			if flag {
 				// TODO: Implement a verbose mode when all crawled pages are also displayed.
-				if false {
-					fmt.Println("-----")
-					fmt.Println("Analized pages:")
-					fmt.Println("-----")
-					fmt.Println(registry)
-				}
+				//if false {
+				//	fmt.Println("-----")
+				//	fmt.Println("Analized pages:")
+				//	fmt.Println("-----")
+				//	fmt.Println(registry)
+				//}
 				fmt.Println("")
+
+				// Close report.
+				report.Close()
+
 				return
 			}
 			flag = true
@@ -121,15 +146,16 @@ func Crawl(url string) {
 	}
 }
 
-// Get start url from the command line arguments.
-func startUrl() (string, error) {
-	flag.Parse()
-
-	args := flag.Args()
-
-	if len(args) < 1 {
-		return "", fmt.Errorf("Please specify a starting point, e.g. https://example.com")
-	}
-
-	return args[0], nil
+func displayHelp() {
+	fmt.Printf(`usage: insecres [-h|-f="path/to/report.csv"] <url>
+ARGUMENTS
+  url
+    A url to start from, e.g. https://example.com"
+OPTIONS
+  -h
+    Show this help message.
+  -f
+    Define the location of the CSV file with the results.
+    If it is not set, results are printed to the console.
+`)
 }
