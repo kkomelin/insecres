@@ -51,6 +51,7 @@ $GOPATH/bin/insecres -h
 ## Roadmap
 
 - [ ] Display result counters
+- [ ] Compare performance of simple regex parsing and Tokenized parsing, which is currently used
 - [x] Implement an option for printing results to a CSV file
 - [x] Add random delay between requests to prevent blacklisting
 - [x] Ignore trailing slashes (https://example.com and https://example.com/ are considered equivalent)
