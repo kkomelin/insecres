@@ -22,6 +22,7 @@ After some research of existing tools, which did not fit my needs, I decided to 
   - OBJECT
   - AUDIO, VIDEO, SOURCE, TRACK
 - Uses a random delay between requests to prevent blacklisting
+- Prints results to a CSV file
 
 ## Installation
 
