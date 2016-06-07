@@ -56,7 +56,7 @@ func (r *Report) Close() error {
 	return r.file.Close()
 }
 
-// IsEmply check whether the file handler is initialized or not.
+// IsEmpty check whether the file handler is initialized or not.
 func (r *Report) IsEmpty() bool {
 	return (r.file == nil)
 }
