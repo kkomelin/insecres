@@ -42,10 +42,6 @@ func main() {
 		return
 	}
 
-	// Prepare file handler to use
-	if reportFlag != "" {
-		Crawl(args[0], reportFlag)
-	} else {
-		Crawl(args[0], "")
-	}
+	// Run the crawler.
+	Crawl(args[0], reportFlag)
 }
