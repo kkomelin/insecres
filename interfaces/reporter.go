@@ -8,6 +8,6 @@ type Reporter interface {
 	WriteLines(lines []string) error
 	// Close releases file.
 	Close() error
-	// Close releases file.
+	// IsEmpty checks whether a target resource is nil or not.
 	IsEmpty() bool
 }
