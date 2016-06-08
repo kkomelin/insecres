@@ -99,7 +99,7 @@ func Crawl(url, reportFile string) {
 
 	// Print results to the file.
 	if reportFile != "" {
-		err := report.Open(reportFlag)
+		err := report.Open(reportFile)
 		if err != nil {
 			fmt.Println(err)
 			return

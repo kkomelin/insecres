@@ -18,12 +18,12 @@ const (
 	MaxDelayBetweenRequests int = 1000
 )
 
-var (
-	helpFlag   bool
-	reportFlag string
-)
-
 func main() {
+	var (
+		helpFlag   bool
+		reportFlag string
+	)
+
 	// Find options.
 	flag.BoolVar(&helpFlag, "h", false, "")
 	flag.StringVar(&reportFlag, "f", "", "")
